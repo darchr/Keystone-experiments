@@ -141,14 +141,15 @@ musl_tool = Artifact.registerArtifact(
 )
 
 rv8_bench = Artifact.registerArtifact(
-    command = '''git clone git@github.com:keystone-enclave/rv8-bench.git;
+    command = '''https://github.com/keystone-enclave/rv8-bench.git;
     cd rv8-bench;
+    git checkout keystone;
     export PATH=$PATH:/opt/riscv/musl-riscv-toolchain-8.2.0-1/bin/;
     make
     ''',
     typ = 'git repo',
     name = 'rv8 source',
-    path =  'rv8-bench/bin/riscv64/',
+    path =  'rv8-bench/',
     cwd = './',
     inputs = [experiments_repo, musl_tool],
     documentation = 'rv8 benchmarks'
