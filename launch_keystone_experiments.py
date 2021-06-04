@@ -38,7 +38,7 @@ gem5_repo = Artifact.registerArtifact(
 gem5_binary = Artifact.registerArtifact(
     command = '''cd gem5;
     git checkout 62610709df76f4b544769cbbb;
-    git apply ../0002-arch-riscv-Update-the-way-a-valid-virtual-address-is.patch;
+    git apply ../0001-arch-riscv-Update-the-way-a-valid-virtual-address-is.patch;
     scons build/RISCV/gem5.opt -j8
     ''',
     typ = 'gem5 binary',
