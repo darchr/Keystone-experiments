@@ -243,7 +243,7 @@ if __name__ == "__main__":
     def createRun(config, cpu, num_cpu, bench):
 
         return gem5Run.createFSRun(
-            'keystone experiments with gem5 for carrv',
+            'keystone experiments with gem5 for carrv (june 4)',
             'gem5/build/RISCV/gem5.opt',
             'configs-riscv-keystone/run_{}.py'.format(config),
             'results/{}/{}/{}/{}'.format(config, bench, cpu, num_cpu),
