@@ -18,7 +18,7 @@ from gem5art.tasks.tasks import run_job_pool
 
 
 experiments_repo = Artifact.registerArtifact(
-    command = 'https://your-remote-add/keystone-experiments.git',
+    command = 'https://github.com/darchr/Keystone-experiments.git',
     typ = 'git repo',
     name = 'Keystone-experiments',
     path =  './',
@@ -33,6 +33,21 @@ gem5_repo = Artifact.registerArtifact(
     path =  'gem5/',
     cwd = './',
     documentation = 'cloned gem5 from googlesource and checked out develop version (as around June 1)'
+)
+
+gem5_binary = Artifact.registerArtifact(
+    command = '''cd gem5;
+    git checkout 62610709df76f4b544769cbbb;
+    git apply ../0001-arch-riscv-add-pma-pmp-checks-during-page-table-walk.patch;
+    git apply ../0002-arch-riscv-Update-the-way-a-valid-virtual-address-is.patch;
+    scons build/RISCV/gem5.opt -j8
+    ''',
+    typ = 'gem5 binary',
+    name = 'gem5',
+    cwd = 'gem5/',
+    path =  'gem5/build/RISCV/gem5.opt',
+    inputs = [gem5_repo, experiments_repo],
+    documentation = 'gem5 binary based on develop version (as around June 1) and applied two patches which are currently under review on gerrit'
 )
 
 m5_binary = Artifact.registerArtifact(
@@ -50,7 +65,7 @@ keystone_repo = Artifact.registerArtifact(
     typ = 'git repo',
     name = 'keystone',
     cwd = './',
-    path = '/keystone',
+    path = 'keystone/',
     inputs = [],
     documentation = 'Keystone enclave github repo'
 )
@@ -122,7 +137,7 @@ musl_tool = Artifact.registerArtifact(
     path =  'musl-riscv-toolchain/',
     cwd = './',
     inputs = [experiments_repo,],
-    documentation = 'Test (untrusted) runner application'
+    documentation = 'musl riscv toolchain to compile rv8 benchmarks'
 )
 
 rv8_bench = Artifact.registerArtifact(
@@ -131,7 +146,7 @@ rv8_bench = Artifact.registerArtifact(
     export PATH=$PATH:/opt/riscv/musl-riscv-toolchain-8.2.0-1/bin/;
     make
     ''',
-    typ = 'binary',
+    typ = 'git repo',
     name = 'rv8 source',
     path =  'rv8-bench/bin/riscv64/',
     cwd = './',
@@ -168,21 +183,6 @@ disk_image = Artifact.registerArtifact(
     path = 'keystone/build/buildroot.build/images/rootfs.ext2',
     inputs = [experiments_repo, keystone_repo, m5_binary, eyrie_runtime, rv8_bench,],
     documentation = 'Keystone disk image with RV8 benchamarks in addition to other needed components/changes to run the experiments'
-)
-
-gem5_binary = Artifact.registerArtifact(
-    command = '''cd gem5;
-    git checkout 62610709df76f4b544769cbbb;
-    git apply ../0001-arch-riscv-add-pma-pmp-checks-during-page-table-walk.patch;
-    git apply ../0002-arch-riscv-Update-the-way-a-valid-virtual-address-is.patch;
-    scons build/RISCV/gem5.opt -j8
-    ''',
-    typ = 'gem5 binary',
-    name = 'gem5',
-    cwd = 'gem5/',
-    path =  'gem5/build/RISCV/gem5.opt',
-    inputs = [gem5_repo,],
-    documentation = 'gem5 binary based on develop version (as around June 1) and applied two patches which are currently under review on gerrit'
 )
 
 linux_repo = Artifact.registerArtifact(
@@ -227,7 +227,7 @@ firmware_binary = Artifact.registerArtifact(
     make -j64;
     ''',
     typ = 'binary',
-    name = 'vmlinux',
+    name = 'firmware',
     path =  'keystone/build/sm.build/platform/generic/firmware/fw_payload.elf',
     inputs = [linux_binary, keystone_repo],
     cwd = './',
