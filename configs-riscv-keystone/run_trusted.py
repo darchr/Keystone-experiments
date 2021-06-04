@@ -63,7 +63,7 @@ def writeBenchScript(dir, bench):
     bench_file.write('insmod keystone-driver.ko \n')
     bench_file.write('/sbin/m5 exit \n')
     bench_file.write('./test-runner ' \
-                     'riscv64/{}.O3 ' \
+                     'riscv64/{}' \
                      'eyrie-rt --utm-size 4096 ' \
                      '--freemem-size 262144 --time \n'.format(args.bench))
     bench_file.write('/sbin/m5 exit \n')
