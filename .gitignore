@@ -1,7 +1,7 @@
 *.pyc
 .vscode
 results
-venv
+gem5art-env
 gem5
 keystone
 rv8-bench
