@@ -61,7 +61,7 @@ def writeBenchScript(dir, bench):
     bench_file = open(file_name,"w+")
     bench_file.write('cd /root/ \n')
     bench_file.write('/sbin/m5 exit \n')
-    bench_file.write('riscv64/{}'.format(args.bench))
+    bench_file.write('riscv64/{} \n'.format(args.bench))
     bench_file.write('/sbin/m5 exit \n')
     bench_file.close()
     return file_name
