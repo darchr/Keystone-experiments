@@ -1,0 +1,49 @@
+From b76fc2215411dc594b138ae418cd5efeb04b7eda Mon Sep 17 00:00:00 2001
+From: Ayaz Akram <yazakram@ucdavis.edu>
+Date: Tue, 25 May 2021 01:58:54 -0700
+Subject: [PATCH 2/2] arch-riscv: Update the way a valid virtual address is
+ computed
+
+According to privileged ISA specs, a valid 64 bit virtual address should
+have bit 63-39 same as bit 38 (for Sv39). Without this change, kernel page
+fault handler does not seem to work correctly. For example, while running
+a program, the kernel was segfaulting complaining that it cannot handle
+kernel paging request at some virtual address (which is the faulting
+address returned by gem5 currently, with all bits after first 39 cleared).
+With this change, that error goes away.
+
+Change-Id: Iae7c9d0af19e29214e14a0db08d7c0ac122122bc
+---
+ src/arch/riscv/pagetable_walker.cc | 2 +-
+ src/arch/riscv/tlb.cc              | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/arch/riscv/pagetable_walker.cc b/src/arch/riscv/pagetable_walker.cc
+index 54725e742..dc1b7fbaa 100644
+--- a/src/arch/riscv/pagetable_walker.cc
++++ b/src/arch/riscv/pagetable_walker.cc
+@@ -441,7 +441,7 @@ Walker::WalkerState::endWalk()
+ void
+ Walker::WalkerState::setupWalk(Addr vaddr)
+ {
+-    vaddr &= (static_cast<Addr>(1) << VADDR_BITS) - 1;
++    vaddr = Addr(sext<VADDR_BITS>(vaddr));
+ 
+     Addr shift = PageShift + LEVEL_BITS * 2;
+     Addr idx = (vaddr >> shift) & LEVEL_MASK;
+diff --git a/src/arch/riscv/tlb.cc b/src/arch/riscv/tlb.cc
+index 8be783655..7e0cc7474 100644
+--- a/src/arch/riscv/tlb.cc
++++ b/src/arch/riscv/tlb.cc
+@@ -277,7 +277,7 @@ TLB::doTranslate(const RequestPtr &req, ThreadContext *tc,
+ {
+     delayed = false;
+ 
+-    Addr vaddr = req->getVaddr() & ((static_cast<Addr>(1) << VADDR_BITS) - 1);
++    Addr vaddr = Addr(sext<VADDR_BITS>(req->getVaddr()));
+     SATP satp = tc->readMiscReg(MISCREG_SATP);
+ 
+     TlbEntry *e = lookup(vaddr, satp.asid, mode, false);
+-- 
+2.17.1
+
