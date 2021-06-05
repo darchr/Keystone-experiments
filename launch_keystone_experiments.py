@@ -79,7 +79,7 @@ eyrie_runtime = Artifact.registerArtifact(
     cmake ..;
     make -j64;
     cd keystone/build/examples/tests/runtime/src/eyrie-test-eyrie;
-    ./build.sh paging;
+    ./build.sh freemem untrusted_io_syscall env_setup linux_syscall;
     ''',
     typ = 'binary',
     name = 'eyrie runtime',
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     def createRun(config, cpu, num_cpu, bench):
 
         return gem5Run.createFSRun(
-            'keystone experiments with gem5 for carrv (june 4)',
+            'keystone experiments with gem5 for carrv (june 5)',
             'gem5/build/RISCV/gem5.opt',
             'configs-riscv-keystone/run_{}.py'.format(config),
             'results/{}/{}/{}/{}'.format(config, bench, cpu, num_cpu),
