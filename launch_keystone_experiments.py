@@ -239,14 +239,17 @@ if __name__ == "__main__":
     cpu_types = ['timing','minor']
     benchmarks = ['aes.O3', 'bigint.O3', 'dhrystone.O3', 'miniz.O3', 'norx.O3', 'primes.O3', 'qsort.O3', 'sha512.O3']
     configs = ['untrusted', 'trusted']
+    # uarchitectures = ['default', 'fu540', 'large']
+    # commenting the above line because default has already been run
+    uarchitectures = ['fu540', 'large']
 
-    def createRun(config, cpu, num_cpu, bench):
+    def createRun(uarch, config, cpu, num_cpu, bench):
 
         return gem5Run.createFSRun(
             'keystone experiments with gem5 for carrv (june 5)',
             'gem5/build/RISCV/gem5.opt',
-            'configs-riscv-keystone/run_{}.py'.format(config),
-            'results/{}/{}/{}/{}'.format(config, bench, cpu, num_cpu),
+            'configs-keystone-{}/run_{}.py'.format(uarch,config),
+            'results/{}/{}/{}/{}/{}'.format(uarch, config, bench, cpu, num_cpu),
             gem5_binary, gem5_repo, experiments_repo,
             'keystone/build/sm.build/platform/generic/firmware/fw_payload.elf',
             'keystone/build/buildroot.build/images/rootfs.ext2',
@@ -256,6 +259,6 @@ if __name__ == "__main__":
             )
 
     # For the cross product of tests, create a run object.
-    runs = starmap(createRun, product(configs, cpu_types, num_cpus, benchmarks))
+    runs = starmap(createRun, product(uarchitectures, configs, cpu_types, num_cpus, benchmarks))
     # Run all of these experiments in parallel
     run_job_pool(runs)
